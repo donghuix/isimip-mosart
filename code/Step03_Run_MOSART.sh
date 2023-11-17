@@ -33,6 +33,7 @@ cd ${CASE_DIR}/${CASE_NAME}
 ./xmlchange ATM_DOMAIN_FILE=domain.lnd.r05_oEC60to30v3.190418.nc
 ./xmlchange LND_DOMAIN_PATH=/compyfs/inputdata/share/domains
 ./xmlchange ATM_DOMAIN_PATH=/compyfs/inputdata/share/domains
+./xmlchange CIME_OUTPUT_ROOT ${wkdir}/outputs
 
 ./xmlchange DATM_CLMNCEP_YR_END=1980
 ./xmlchange DATM_CLMNCEP_YR_START=1980
@@ -63,7 +64,9 @@ EOF
 files=""
 for i in {1901..2001..10}
 do
-   files="${files}${MODEL,,}.daily.$i_${i+9}.nc\n"
+   j=9
+   j=$(( $i + $j ))
+   files="${files}${MODEL,,}.daily.${i}_${j}.nc\n"
 done
 files="${files}${MODEL,,}.daily.2011_2019.nc"
 echo "${files}"
