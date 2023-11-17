@@ -30,6 +30,8 @@ def main():
 			model = impact_models[i]
 			fname = model.lower() + '_' + climate_forcing.lower() + '_' + climate_scenario + \
 					'_histsoc_default_' + varname + '_global_daily_' + periods[j] + '.nc'
+			
+			print('Processing ' + model + ' ' + periods[j])
 
 			ncio = netCDF4.Dataset('../data/isimip3a/'+impact_models[i] + '/' + fname)
 			qtot = ncio.variables[varname][:] # UNIT: [kg m-2 s-1] --> [mm/s]
