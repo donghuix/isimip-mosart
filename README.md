@@ -5,3 +5,7 @@
 * Climate scenario
   * counterclim: counterfactual climate
   * obsclim: factual climate
+
+Required packages
+* Python
+* numpy, os, urllib
