@@ -9,3 +9,6 @@
 Required packages
 * Python
 * numpy, os, urllib
+
+On compy
+* ``module load python/3.7.3``
