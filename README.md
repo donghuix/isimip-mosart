@@ -10,5 +10,11 @@ Required packages
 * Python
 * numpy, os, urllib
 
+Download GSIM dataset
+```
+wget https://store.pangaea.de/Publications/DoH-etal_2018/GSIM_metadata.zip
+wget https://store.pangaea.de/Publications/GudmundssonL-etal_2018/GSIM_indices.zip
+```
+
 On compy
 * ``module load python/3.7.3``
