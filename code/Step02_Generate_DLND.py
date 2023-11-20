@@ -37,7 +37,12 @@ def main():
 			qtot = ncio.variables[varname][:] # UNIT: [kg m-2 s-1] --> [mm/s]
 			lon  = ncio.variables['lon'][:]
 			lat  = ncio.variables['lat'][:]
-
+			# For DLND, need to shift the lon from -179.75~179.75 to 0.25~359.75
+			lon  = np.arange(0.25,360,0.5)
+			tmp  = qtot
+			qtot[:,:,:360] = tmp[:,:,360:]
+			qtot[:,:,360:] = tmp[:,:,:360]
+			del tmp
 			yr_start = int(periods[j][:4])
 			yr_end   = int(periods[j][5:])
 			dn1      = date.toordinal(date(yr_start,1,1))
