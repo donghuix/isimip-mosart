@@ -41,7 +41,7 @@ cd ${CASE_DIR}/${CASE_NAME}
 ./xmlchange DLND_CPLHIST_YR_START=1901
 ./xmlchange DLND_CPLHIST_YR_END=2019
 ./xmlchange DLND_CPLHIST_YR_ALIGN=1901
-./xmlchange RUN_STARTDATE=1910-01-01
+./xmlchange RUN_STARTDATE=1901-01-01
 
 ./xmlchange NTASKS=400
 ./xmlchange STOP_N=119,STOP_OPTION=nyears
@@ -74,8 +74,10 @@ echo "${files}"
 cp ${CASE_DIR}/${CASE_NAME}/CaseDocs/dlnd.streams.txt.lnd.gpcc ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
 chmod +rw ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
 perl -w -i -p -e "s@/compyfs/inputdata/lnd/dlnd7/hcru_hcru@${dlnddir}@" ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
-perl -pi -e '$a=1 if(!$a && s/GPCC.daily.nc/${MODEL,,}.daily.1901_1910.nc/);' {CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
 perl -w -i -p -e "s@GPCC.daily.nc@${files}@" ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
+sed '17,27d' ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc > ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc2
+rm ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
+mv ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc2 ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
 sed -i '/ZBOT/d' ${CASE_DIR}/${CASE_NAME}/user_dlnd.streams.txt.lnd.gpcc
 
 ./case.setup

@@ -18,3 +18,9 @@ wget https://store.pangaea.de/Publications/GudmundssonL-etal_2018/GSIM_indices.z
 
 On compy
 * ``module load python/3.7.3``
+
+# Workflow
+1. ```python3 Step01_Download_ISIMIP3a.py``` Download ISIMIP3a runoff forcings
+2. ```python3 Step02_Generate_DLND.py``` Process the ISIMIP3a runoff forcings to DLND format
+3. ```sh Step03_Run_MOSART.sh``` setup, build, and submit DLND-MOSART simulation. Need to mannually ``MODEL`` and MOSART input file.
+4. TODO. Validate simulation against GSIM streamflow observation.

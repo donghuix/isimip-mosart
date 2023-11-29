@@ -7,7 +7,7 @@ from datetime import datetime
 import getpass
 
 def main():
-	impact_models    = ['CLASSIC', 'CWatM', 'H08', 'HydroPy', 'JULES-W2', 'JULES-W2-DDM30', 'MIROC-INTEG-LAND']
+	impact_models    = ['H08'] #['CLASSIC', 'CWatM', 'H08', 'HydroPy', 'JULES-W2', 'JULES-W2-DDM30', 'MIROC-INTEG-LAND']
 	climate_forcing  = 'gswp3-w5e5'
 	climate_scenario = 'obsclim'
 	periods          = ['1901_1910', '1911_1920', '1921_1930', '1931_1940', '1941_1950', \
@@ -37,12 +37,13 @@ def main():
 			qtot = ncio.variables[varname][:] # UNIT: [kg m-2 s-1] --> [mm/s]
 			lon  = ncio.variables['lon'][:]
 			lat  = ncio.variables['lat'][:]
-			# For DLND, need to shift the lon from -179.75~179.75 to 0.25~359.75
-			lon  = np.arange(0.25,360,0.5)
-			tmp  = qtot
-			qtot[:,:,:360] = tmp[:,:,360:]
-			qtot[:,:,360:] = tmp[:,:,:360]
-			del tmp
+			assert(lon[0] < 0)
+			assert(lat[1] < lat[0])
+			# For DLND, need to shift the lon from -179.75~179.75 to 0.25~359.75 [11/29/2023, no need to convert to 0 to 360]
+			# ISIMIP3a lat varies from 90 to -90, need to change it to -90 to 90
+			#lon  = np.arange(0.25,360,0.5)
+			lat  = np.arange(-89.75,90,0.5)
+			qtot = np.flip(qtot,axis=1)
 			yr_start = int(periods[j][:4])
 			yr_end   = int(periods[j][5:])
 			dn1      = date.toordinal(date(yr_start,1,1))
@@ -74,11 +75,11 @@ def create_dlnd2d(fname,qtot,time,lat,lon,startdate,isleap):
     #
     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	var = dict()
-	var['QDRAI']   = ncid.createVariable('QDRAI',   np.float32, ('time', 'lat', 'lon'))
-	var['QOVER']   = ncid.createVariable('QOVER',   np.float32, ('time', 'lat', 'lon'))
-	var['QRUNOFF'] = ncid.createVariable('QRUNOFF', np.float32, ('time', 'lat', 'lon'))
-	var['lat']     = ncid.createVariable('lat',     np.float32, ('lat',))
-	var['lon']     = ncid.createVariable('lon',     np.float32, ('lon',))
+	var['QDRAI']   = ncid.createVariable('QDRAI',   np.float64, ('time', 'lat', 'lon'),fill_value=0)
+	var['QOVER']   = ncid.createVariable('QOVER',   np.float64, ('time', 'lat', 'lon'),fill_value=0)
+	var['QRUNOFF'] = ncid.createVariable('QRUNOFF', np.float64, ('time', 'lat', 'lon'),fill_value=0)
+	var['lat']     = ncid.createVariable('lat',     np.float64, ('lat',))
+	var['lon']     = ncid.createVariable('lon',     np.float64, ('lon',))
 	var['time']    = ncid.createVariable('time',    np.float64, ('time',))
 	var['QDRAI'].setncattr('standard_name', 'subsurface runoff')
 	var['QDRAI'].setncattr('units', 'mm/s')
