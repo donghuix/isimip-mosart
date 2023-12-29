@@ -82,7 +82,7 @@ def main(argv):
             corr_coef = np.corrcoef(x,y)
             cc[i]  = corr_coef[0,1]
             nse[i] = 1 - np.sum((y-x)**2)/np.sum((x-np.mean(x))**2)
-            kge[i] = 1 - np.sqrt((cc[i]-1)^**2 + (np.std(y)/np.std(x))-1)**2 + (np.mean(y)/np.mean(x)-1)**2)
+            kge[i] = 1 - np.sqrt((cc[i]-1)**2 + (np.std(y)/np.std(x)-1)**2 + (np.mean(y)/np.mean(x)-1)**2)
             np.sqrt
             print("Correlation coefficient  for " + gsim_no[i] + " is ", cc[i])
             print("Nash-Sutcliff Efficiency for " + gsim_no[i] + " is ", nse[i])
