@@ -53,13 +53,13 @@ def main(argv):
         #rundir = '/compyfs/xudo627/e3sm_scratch/Global_DLND_MOSART_GRFR_7b57911.2023-11-14-210958/run/'
         #rundir = '/compyfs/xudo627/e3sm_scratch/Global_DLND_MOSART_GRFR_7b57911.2023-11-14-210958/run/'
         q_sim,yrs_sim,mos_sim, = read_mosart_outputs(rundir, yr1, yr2, row, col)
-        np.savetxt(model+'.dat', q_sim, delimiter=',')
-        np.savetxt(model+'_yrs.dat', yrs_sim, delimiter=',')
-        np.savetxt(model+'_mos.dat', mos_sim, delimiter=',')
+        np.savetxt('../data/processed/'+model+'.dat', q_sim, delimiter=',')
+        np.savetxt('../data/processed/'+model+'_yrs.dat', yrs_sim, delimiter=',')
+        np.savetxt('../data/processed/'+model+'_mos.dat', mos_sim, delimiter=',')
     else:
-        q_sim = np.loadtxt(model+'.dat', delimiter=',') 
-        yrs_sim = np.loadtxt(model+'_yrs.dat', delimiter=',') 
-        mos_sim = np.loadtxt(model+'_mos.dat', delimiter=',') 
+        q_sim = np.loadtxt('../data/processed/'+model+'.dat', delimiter=',') 
+        yrs_sim = np.loadtxt('../data/processed/'+model+'_yrs.dat', delimiter=',') 
+        mos_sim = np.loadtxt('../data/processed/'+model+'_mos.dat', delimiter=',') 
 
     ns  = len(row) # Number of gauges for evaluation
     cc  = np.empty((ns,)) # correlation coefficient
@@ -70,23 +70,32 @@ def main(argv):
         q_gsim, yrs_gsim, mos_gsim    = read_gsim_mon(gsim_no[i])
         ind_sim, ind_gsim, no_overlap = match_time_series(yrs_sim,mos_sim,yrs_gsim,mos_gsim)
 
+        print('i = %3d, ' % (i),end='')
+        print(gsim_no[i]+': ',end='')
         # compute evaluation metric
         if no_overlap:
             print('There is no overlap between data and simualtion')
             cc[i] = np.nan
+            nse[i] = np.nan
+            kge[i] = np.nan
         else:
             obs = q_gsim[ind_gsim]
             sim = q_sim[ind_sim,i]
             x = obs[np.logical_not(np.isnan(obs))]
             y = sim[np.logical_not(np.isnan(obs))]
-            corr_coef = np.corrcoef(x,y)
-            cc[i]  = corr_coef[0,1]
-            nse[i] = 1 - np.sum((y-x)**2)/np.sum((x-np.mean(x))**2)
-            kge[i] = 1 - np.sqrt((cc[i]-1)**2 + (np.std(y)/np.std(x)-1)**2 + (np.mean(y)/np.mean(x)-1)**2)
-            np.sqrt
-            print("Correlation coefficient  for " + gsim_no[i] + " is ", cc[i])
-            print("Nash-Sutcliff Efficiency for " + gsim_no[i] + " is ", nse[i])
-            print("Kling-Gupta efficiency   for " + gsim_no[i] + " is ", kge[i])
+            if np.sum(~np.isnan(obs)) < 12:
+                print('Obs contains not enough data')
+                cc[i] = np.nan
+                nse[i] = np.nan
+                kge[i] = np.nan
+            else:
+                corr_coef = np.corrcoef(x,y)
+                cc[i]  = corr_coef[0,1]
+                nse[i] = 1 - np.sum((y-x)**2)/np.sum((x-np.mean(x))**2)
+                kge[i] = 1 - np.sqrt((cc[i]-1)**2 + (np.std(y)/np.std(x)-1)**2 + (np.mean(y)/np.mean(x)-1)**2)
+                print("CC  = %5.2f" % (cc[i]),  end='')
+                print("NSE = %5.2f" % (nse[i]), end='')
+                print("KGE = %5.2f" % (kge[i]))
 
             if debug and i == gage:
                 plt.plot(obs,'k-', lw=2,label='Obs')
