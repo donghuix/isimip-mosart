@@ -4,6 +4,7 @@ import netCDF4
 from netCDF4 import Dataset
 from datetime import date
 from datetime import datetime
+import create_nc
 import getpass
 
 def main():
@@ -56,73 +57,6 @@ def main():
 			fout      = '../data/dlnd/'+impact_models[i]+'/'+model.lower()+'.daily.'+periods[j]+'.nc'
 			create_dlnd2d(fout,qtot,dn,lat,lon,startdate,True)
 			ncio.close()
-
-def create_dlnd2d(fname,qtot,time,lat,lon,startdate,isleap):
-	ncid = Dataset(fname, 'w')
-	nlon = len(lon)
-	nlat = len(lat)
-	# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #
-    #                           Define dimensions
-    #
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	ncid.createDimension('time', None)
-	ncid.createDimension('lat',nlat)
-	ncid.createDimension('lon',nlon)
-	# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #
-    #                           Define variables
-    #
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	var = dict()
-	var['QDRAI']   = ncid.createVariable('QDRAI',   np.float64, ('time', 'lat', 'lon'),fill_value=0)
-	var['QOVER']   = ncid.createVariable('QOVER',   np.float64, ('time', 'lat', 'lon'),fill_value=0)
-	var['QRUNOFF'] = ncid.createVariable('QRUNOFF', np.float64, ('time', 'lat', 'lon'),fill_value=0)
-	var['lat']     = ncid.createVariable('lat',     np.float64, ('lat',))
-	var['lon']     = ncid.createVariable('lon',     np.float64, ('lon',))
-	var['time']    = ncid.createVariable('time',    np.float64, ('time',))
-	var['QDRAI'].setncattr('standard_name', 'subsurface runoff')
-	var['QDRAI'].setncattr('units', 'mm/s')
-	var['QOVER'].setncattr('standard_name', 'surface runoff')
-	var['QOVER'].setncattr('units', 'mm/s')
-	var['QRUNOFF'].setncattr('standard_name', 'total runoff')
-	var['QRUNOFF'].setncattr('units', 'mm/s')
-	var['time'].setncattr('standard_name', 'time')
-	if isleap:
-		var['time'].setncattr('calendar', 'gregorian')
-	else:
-		var['time'].setncattr('calendar', 'noleap')
-	var['time'].setncattr('units', 'days since ' + startdate + ' 00:00:00')
-	var['time'].setncattr('axis', 'T')
-	var['lat'].setncattr('standard_name', 'latitude')
-	var['lat'].setncattr('long_name', 'latitude')
-	var['lat'].setncattr('units', 'degrees_north')
-	var['lat'].setncattr('axis','Y')
-	var['lon'].setncattr('standard_name', 'longitude')
-	var['lon'].setncattr('long_name', 'longitude')
-	var['lon'].setncattr('units', 'degrees_east')
-	var['lon'].setncattr('axis','X')
-	
-
-	user_name = getpass.getuser()
-	ncid.setncattr('Created_by',user_name)
-	ncid.setncattr('Created_on',datetime.now().strftime('%c'))
-
-	# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #
-    #                           Copy variables
-    #
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	qdrai = qtot / 2.0
-	qover = qtot - qdrai
-	var['QDRAI'][:]   = qdrai
-	var['QOVER'][:]   = qover
-	var['QRUNOFF'][:] = qtot
-	var['time'][:]    = time
-	var['lat'][:]     = lat
-	var['lon'][:]     = lon
-
-	ncid.close()
 
 if __name__ == '__main__':
     main()
