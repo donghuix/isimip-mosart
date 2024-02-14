@@ -24,5 +24,8 @@ On compy
 2. ```python3 Step02_Generate_DLND.py``` Process the ISIMIP3a runoff forcings to DLND format
 3. ```sh Step03_Run_MOSART.sh``` setup, build, and submit DLND-MOSART simulation. Need to mannually ``MODEL`` and MOSART input file.
 4. ```python3 Step04_Validate_MOSART.py -m model_name -r True -c case_name``` to read MOSART output for a specified simulation. 
-    * For exmaple, ```python3 Step04_Validate_MOSART.py -m H08 -r True -c Global_DLND_MOSART_H08_7b57911.2023-11-28-083738``` to process the simulation forced by *H08* runoff.
+    * For exmaple, ```python3 Step04_Validate_MOSART.py -m H08 -r True -c Global_DLND_MOSART_H08_640f471.2024-01-18-112852``` to process the simulation forced by *H08* runoff.
     * ```python3 Step04_Validate_MOSART.py -m H08 -d True -g 1``` to check time series comparion between observation and simulation for 1st GSIM gage.
+
+# isimip3a
+1. mpiexec -n 12 python3 -m mpi4py ISIMIP3a_Step01_Download_forcings.py --mca btl_openib_allow_ib 1
