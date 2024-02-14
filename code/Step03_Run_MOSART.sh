@@ -50,9 +50,7 @@ cd ${CASE_DIR}/${CASE_NAME}
 ./preview_namelists
 
 cat >> user_nl_mosart << EOF
-frivinp_rtm = '/compyfs/inputdata/rof/mosart/MOSART_2way_LLR3_c220615_coupling_test.nc'
-inundflag = .true.
-opt_elevprof = 1
+frivinp_rtm = '/compyfs/inputdata/rof/mosart/MOSART_global_half_20180721a.nc'
 EOF
 
 cat >> user_nl_dlnd << EOF
