@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import netCDF4
 import csv
 import glob 
+import cartopy.crs as ccrs
 
 def main(argv):
 
@@ -46,9 +47,7 @@ def main(argv):
         elif opt in ("-e", "--end"):
             yr2 = int(arg)
 
-    
-
-    gsim_no, row, col = read_gsim_index()
+    gsim_no, lon, lat, row, col = read_gsim_index()
     if read:
         #rundir = '/compyfs/xudo627/e3sm_scratch/Global_DLND_MOSART_GRFR_7b57911.2023-11-14-210958/run/'
         #rundir = '/compyfs/xudo627/e3sm_scratch/Global_DLND_MOSART_GRFR_7b57911.2023-11-14-210958/run/'
@@ -105,7 +104,13 @@ def main(argv):
                 plt.title(gsim_no[i])
                 plt.grid()
                 plt.show()
-        
+    
+    fig = plt.figure(figsize=(10, 5))
+    ax = fig.add_subplot(1, 1, 1, projection=ccrs.Robinson())
+    ax.set_global()
+    ax.coastlines()
+    ax.scatter(lon,lat,s=10,c=cc, transform=ccrs.PlateCarree(),cmap='PiYG',vmin=0, vmax=1)
+    plt.show()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Functions
@@ -116,6 +121,8 @@ def read_gsim_index():
         csvFile = csv.reader(file)
         num_of_stations = sum(1 for lines in csvFile)
         gsim_no = [''] * num_of_stations
+        lon = np.empty((num_of_stations, ))
+        lat = np.empty((num_of_stations, ))
         row = np.empty((num_of_stations, ),dtype=int)
         col = np.empty((num_of_stations, ),dtype=int)
 
@@ -123,12 +130,14 @@ def read_gsim_index():
         csvFile = csv.reader(file)
         k = 0
         for lines in csvFile:
+            lon[k] = lines[1]
+            lat[k] = lines[2]
             row[k] = lines[4]
             col[k] = lines[5]
             gsim_no[k] = lines[0]
             k = k + 1
 
-    return gsim_no, row, col
+    return gsim_no, lon, lat, row, col
 
 def read_mosart_outputs(rundir, yr1, yr2, row, col):
 
