@@ -26,7 +26,7 @@ varnames          = ['huss', 'pr', 'ps', 'rsds', 'sfcwind', 'tas', 'tasmax', 'ta
 # Max air temperature, Min air temperature 
 
 climate_forcing  = climate_forcings[0]
-climate_scenario = climate_scenarios[1]
+climate_scenario = climate_scenarios[0]
 
 if climate_scenario == 'obsclim' or climate_scenario == 'counterclim':
     periods = [ '1901_1910', '1911_1920', '1921_1930', '1931_1940', '1941_1950', \
@@ -167,8 +167,8 @@ for i in range(nps):
 			else:
 				print('Processing ' + dprec + ' and ' + dsolr)
 				ind  = np.where(np.logical_and(yr == iy, mo == im))[0]
-				prec = {"Prec": np.flip(ncprec.variables['pr'][ind,:,:],axis=1)}
-				solr = {"FSDS": np.flip(ncsolr.variables['rsds'][ind,:,:],axis=1)}
+				prec = {"Prec": np.flip(ncprec.variables['pr'][ind,:,:].filled(fill_value=1e-5),axis=1)}
+				solr = {"FSDS": np.flip(ncsolr.variables['rsds'][ind,:,:].filled(fill_value=300),axis=1)}
 				numd = len(ind)
 				tday = np.arange(0.5,numd+1-0.5,1)
 
@@ -221,6 +221,12 @@ for i in range(nps):
 							temp3hr[:,j,i], pres3hr[:,j,i], huss3hr[:,j,i], wind3hr[:,j,i] = \
 							disaggregate_tpqw(tday,temp[:,j,i],tmax[:,j,i],tmin[:,j,i],pres[:,j,i], \
 												huss[:,j,i],wind[:,j,i],hmax,hmin,t3hr)
+						else:
+							# Filled values
+							temp3hr[:,j,i] = 300
+							pres3hr[:,j,i] = 1e5
+							huss3hr[:,j,i] = 0.02
+							wind3hr[:,j,i] = 1
 
 				tpqw = {'PSRF': np.flip(pres3hr,axis=1), \
 						'TBOT': np.flip(temp3hr,axis=1), \
