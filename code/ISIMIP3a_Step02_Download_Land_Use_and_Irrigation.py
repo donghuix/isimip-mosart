@@ -58,7 +58,7 @@ urbanarea = urbanarea * 100.0
 irrigated = np.concatenate((irrigated[:51,:,:],irrigated[:115,:,:]),axis=0)
 rainfed   = np.concatenate((rainfed[:51,:,:]  ,rainfed[:115,:,:])  ,axis=0)
 
-create_landuse_timeseries(fin,irrigated,rainfed,urbanarea,yr_start,yr_end,scenarios[i])
+create_landuse_timeseries(fin,irrigated,rainfed,urbanarea,yr_start,yr_end,'histsoc')
 
 # Spinlim
 #for i in range(len(scenarios)):
